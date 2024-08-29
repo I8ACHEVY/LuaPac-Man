@@ -38,11 +38,8 @@ function love.load()
     love.graphics.setFont(Font)
 
     TitleScreen = love.graphics.newImage('assets/images/title.png')
-
     SettingsScreen = love.graphics.newImage('assets/images/settings.png')
-
     ScoreScreen = love.graphics.newImage('assets/images/highscore.png')
-
     CreditScreen = love.graphics.newImage('assets/images/credit.png')
 
     FruitAtlas = love.graphics.newImage('assets/images/fruits.png')
@@ -222,7 +219,7 @@ function GetHighScore()
         HighScore = LinesFrom('highscore.score')
     else
         local file = io.open('highscore.score', 'w')
-        f:write('0')
+        --       f:write('0')
         f:close()
         HighScore = { 0 }
     end

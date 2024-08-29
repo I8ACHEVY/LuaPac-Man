@@ -299,6 +299,9 @@ end
 
 pacMan_states.score.draw = function()
     love.graphics.draw(ScoreScreen, 0, 0, 0, 2, 2)
+    love.graphics.print(HighScore[1], WindowWidth * 0.40, 120, 0, 2, 2)
+    love.graphics.print(HighScore[2], WindowWidth * 0.40, 150, 0, 2, 2)
+    love.graphics.print(HighScore[3], WindowWidth * 0.40, 180, 0, 2, 2)
     for i, item in ipairs(ScMenu) do
         love.graphics.print(item, ScMenuPos[i][1] + 30, ScMenuPos[i][2], 0, 2, 2)
     end
