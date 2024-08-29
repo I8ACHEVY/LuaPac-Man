@@ -77,22 +77,54 @@ function pacMan:update(dt)
     self.lastScore = self.score
 
     -- Movement --
-    local nextX = self.x + dt * self.speed * self.speedBoost * self.dirX
-    local nextY = self.y + dt * self.speed * self.speedBoost * self.dirY
-    local nextRoundX = Round(nextX)
-    local nextRoundY = Round(nextY)
+    --     local nextX = self.x + dt * self.speed * self.speedBoost * self.dirX
+    --     local nextY = self.y + dt * self.speed * self.speedBoost * self.dirY
+    --     local nextRoundX = Round(nextX)
+    --     local nextRoundY = Round(nextY)
 
-    if (self.direction == "left" and Obstacle[nextRoundY][nextRoundX - 1] > 0) or
-        (self.direction == "right" and Obstacle[nextRoundY][nextRoundX + 1] > 0) or
-        (self.direction == "up" and Obstacle[nextRoundY - 1][nextRoundX] > 0) or
-        (self.direction == "down" and Obstacle[nextRoundY + 1][nextRoundX] > 0) then
-        self.dirX, self.dirY = 0, 0
-        self.x, self.y = nextRoundX, nextRoundY
-    else
-        self.x, self.y = nextX, nextY
+    --     if (self.direction == "left" and Obstacle[nextRoundY][nextRoundX - 1] > 0) or
+    --         (self.direction == "right" and Obstacle[nextRoundY][nextRoundX + 1] > 0) or
+    --         (self.direction == "up" and Obstacle[nextRoundY - 1][nextRoundX] > 0) or
+    --         (self.direction == "down" and Obstacle[nextRoundY + 1][nextRoundX] > 0) then
+    --         self.dirX, self.dirY = 0, 0
+    --         self.x, self.y = nextRoundX, nextRoundY
+    --     else
+    --         self.x, self.y = nextX, nextY
+    --     end
+    -- end
+    if (self.direction == "left") then
+        if Obstacle[roundY][roundX - 1] > 0 then
+            self.dirX = 0
+            self.x = roundX
+        end
     end
+
+    if (self.direction == "right") then
+        if Obstacle[roundY][roundX + 1] > 0 then
+            self.dirX = 0
+            self.x = roundX
+        end
+    end
+
+    if (self.direction == "up") then
+        if Obstacle[roundY - 1][roundX] > 0 then
+            self.dirY = 0
+            self.y = roundY
+        end
+    end
+
+
+    if (self.direction == "down") then
+        if Obstacle[roundY + 1][roundX] > 0 then
+            self.dirY = 0
+            self.y = roundY
+        end
+    end
+    self.x = self.x + dt * self.speed * self.speedBoost * self.dirX
+    self.y = self.y + dt * self.speed * self.speedBoost * self.dirY
 end
 
+--
 function pacMan:draw()
     local sprite = self.sprites[self.keyframe]
     local xPos, yPos = (self.x - 1) * Scale + Scale * 0.5, (self.y - 1) * Scale + Scale * 0.5
@@ -147,7 +179,7 @@ function pacMan:collect(item)
     end
     if Dots <= 0 then
         Level = Level + 1
-        if Level >= 2 then Level = 2 end
+        if Level >= 3 then Level = 3 end
         pacMan:init()
         Ghost_red:init()
         Ghost_red.chaseIter = 1
