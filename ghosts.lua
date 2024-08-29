@@ -11,7 +11,7 @@ function SetState(self, state)
     elseif self.direction == 'down' then
         reset = 'up'
     else
-        reset = 'right'
+        reset = 'left'
     end
     self.nextDecision = reset
 end
