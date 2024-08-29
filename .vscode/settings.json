@@ -2,5 +2,10 @@
     "Lua.diagnostics.globals": [
         "love",
         "lldebugger",
+        "pacMan",
+        "f",
+        "aa",
+        "bb",
+        "pacMan_states"
     ]
 }
