@@ -46,6 +46,7 @@ end
 
 pacMan_states.game.catch = function()
     SoundDeath:play()
+    print('assets/images/gameover.png')
     pacMan.life = pacMan.life - 1
     if pacMan.life <= 0 then
         if pacMan.score > HighScore[1] then
