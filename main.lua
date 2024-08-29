@@ -186,12 +186,12 @@ function WriteScore()
     for a = 1, #HighScore do
         table.insert(tmp, HighScore[a])
     end
-    local res = ''
+    local reset = ''
     for a = 1, #tmp do
-        res = res .. tmp[a] .. '\n'
+        reset = reset .. tmp[a] .. '\n'
     end
     local file = io.open('highscore.score', 'w+')
-    f:write(res)
+    f:write(reset)
     f:close()
 end
 
