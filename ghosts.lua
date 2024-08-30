@@ -1,9 +1,12 @@
 -- Fantom Blue --
 
 function SetState(self, state)
-    if state == 'fantom' and self.state == 'exitHome' then return end
+    if state == 'fantom' and self.state == 'exitHome' then
+        return
+    end
+
     self.state = state
-    local reset = ''
+    local reset
     if self.direction == 'up' then
         reset = 'down'
     elseif self.direction == 'right' then
@@ -40,10 +43,14 @@ end
 local function getSurfaceTile(x, y)
     return
     {
-        Obstacle[y - 1][x],
-        Obstacle[y][x + 1],
-        Obstacle[y + 1][x],
-        Obstacle[y][x - 1],
+        -- Obstacle[y - 1][x],
+        -- Obstacle[y][x + 1],
+        -- Obstacle[y + 1][x],
+        -- Obstacle[y][x - 1],
+        Obstacle[y - 1] and Obstacle[y - 1][x] or 0,
+        Obstacle[y] and Obstacle[y][x + 1] or 0,
+        Obstacle[y + 1] and Obstacle[y + 1][x] or 0,
+        Obstacle[y] and Obstacle[y][x - 1] or 0,
     }
 end
 
@@ -61,14 +68,25 @@ local function update(self, dt)
         end
     end
 
+    -- if Round(self.x) == Round(pacMan.x) and Round(self.y) == Round(pacMan.y) then
+    --     if self.state == 'goHome' then
+    --     elseif self.state == 'fantom' then
+    --         SoundGnom:play()
+    --         pacMan.successfulCatch = pacMan.successfulCatch + 1
+    --         if pacMan.successfulCatch > 5 then
+    --             pacMan.successfulCatch = 5
+    --         end
+    --         pacMan.score = pacMan.score + CatchPoint[pacMan.successfulCatch]
+    --         self.state = 'goHome'
+    --         return
+    --     else
+    --         pacMan_states.game.catch()
+    --     end
+    -- end
     if Round(self.x) == Round(pacMan.x) and Round(self.y) == Round(pacMan.y) then
-        if self.state == 'goHome' then
-        elseif self.state == 'fantom' then
+        if self.state == 'fantom' then
             SoundGnom:play()
-            pacMan.successfulCatch = pacMan.successfulCatch + 1
-            if pacMan.successfulCatch > 5 then
-                pacMan.successfulCatch = 5
-            end
+            pacMan.successfulCatch = math.min(pacMan.successfulCatch + 1, 5)
             pacMan.score = pacMan.score + CatchPoint[pacMan.successfulCatch]
             self.state = 'goHome'
             return
@@ -76,8 +94,9 @@ local function update(self, dt)
             pacMan_states.game.catch()
         end
     end
-
+    ----------------------------------------------
     if self.state == 'fantom' then
+        self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
         self.currentAtlas = 'fantomAtlas'
         self.animationDirection = 'fantom'
     else
@@ -101,24 +120,24 @@ local function update(self, dt)
         local surfaceObstacle = getSurfaceTile(nX, nY)
 
         local dist = {}
-        for a = 1, #surfaceObstacle do
+        for i = 1, #surfaceObstacle do
             repeat
-                if surfaceObstacle[a] == 1 then
+                if surfaceObstacle[i] == 1 then
                     break
                 end
-                if a == 1 and self.direction == 'down' then
+                if i == 1 and self.direction == 'down' then
                     break
                 end
-                if a == 2 and self.direction == 'left' then
+                if i == 2 and self.direction == 'left' then
                     break
                 end
-                if a == 3 and self.direction == 'up' then
+                if i == 3 and self.direction == 'up' then
                     break
                 end
-                if a == 4 and self.direction == 'right' then
+                if i == 4 and self.direction == 'right' then
                     break
                 end
-                if a == 1 then
+                if i == 1 then
                     table.insert(dist, {
                         dist = math.abs(distance(self.targetX, self.targetY, nX, nY - 1)),
                         x = nX,
@@ -126,7 +145,7 @@ local function update(self, dt)
                         dir =
                         "up"
                     })
-                elseif a == 2 then
+                elseif i == 2 then
                     table.insert(dist, {
                         dist = math.abs(distance(self.targetX, self.targetY, nX + 1, nY)),
                         x = nX + 1,
@@ -134,7 +153,7 @@ local function update(self, dt)
                         dir =
                         "right"
                     })
-                elseif a == 3 then
+                elseif i == 3 then
                     table.insert(dist, {
                         dist = math.abs(distance(self.targetX, self.targetY, nX, nY + 1)),
                         x = nX,
@@ -142,7 +161,7 @@ local function update(self, dt)
                         dir =
                         "down"
                     })
-                elseif a == 4 then
+                elseif i == 4 then
                     table.insert(dist, {
                         dist = math.abs(distance(self.targetX, self.targetY, nX - 1, nY)),
                         x = nX - 1,
@@ -153,6 +172,7 @@ local function update(self, dt)
                 end
             until true
         end
+
         if self.state == 'fantom' then
             table.sort(dist, function(a, b)
                 local aa = love.math.random()
@@ -191,7 +211,6 @@ local function update(self, dt)
         self.dirX = 0
         self.dirY = 1
     end
-
     if not self.state == 'fantom' then
         self.animationDirection = self.direction
     end
@@ -204,20 +223,12 @@ local function draw(self)
         love.graphics.setColor(1, 1, 1, self.blinkTime % 1)
     end
 
-    -- local image
-    -- if self.currentAtlas == 'atlas' then
-    --     image = Ghost_red.atlas
-    -- elseif self.currentAtlas == 'fantomAtlas' then
-    --     image = fantomAtlas
-    -- end
-
-    love.graphics.draw(self[self.currentAtlas],
-        self.sprites[self.animationDirection][self.keyframe],
+    love.graphics.draw(self[self.currentAtlas], self.sprites[self.animationDirection][self.keyframe],
         (self.x - 1) * Scale + Scale * 0.5,
         (self.y - 1) * Scale + Scale * 0.5,
         self.angle,
-        self.scaleSignX * 1 * 1.6,
-        self.scaleSignY * 1 * 1.6,
+        self.scaleSignX * 1.6,
+        self.scaleSignY * 1.6,
         16 * 0.5,
         16 * 0.5)
     if self.blink then
