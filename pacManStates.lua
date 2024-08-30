@@ -17,6 +17,9 @@ pacMan_states.game.load = function(dt)
     pacMan.nextEarnLife = 1
     pacMan:init()
     Ghost_red:init()
+    Ghost_blue:init()
+    Ghost_pink:init()
+    Ghost_orange:init()
 
     Dots = 244
 
@@ -36,12 +39,21 @@ pacMan_states.game.update = function(dt)
 
     Animation(pacMan, dt)
     Animation(Ghost_red, dt)
+    Animation(Ghost_blue, dt)
+    Animation(Ghost_pink, dt)
+    Animation(Ghost_orange, dt)
 
     HandleDirection(pacMan)
     HandleDirection(Ghost_red)
+    HandleDirection(Ghost_blue)
+    HandleDirection(Ghost_pink)
+    HandleDirection(Ghost_orange)
 
     pacMan:update(dt)
     Ghost_red:update(dt)
+    Ghost_blue:update(dt)
+    Ghost_pink:update(dt)
+    Ghost_orange:update(dt)
 end
 
 pacMan_states.game.catch = function()
@@ -57,6 +69,9 @@ pacMan_states.game.catch = function()
     end
     pacMan:init()
     Ghost_red:init()
+    Ghost_blue:init()
+    Ghost_pink:init()
+    Ghost_orange:init()
 
     ReadyTimer = 3
 end
@@ -66,8 +81,32 @@ pacMan_states.game.addBonus = function()
 
     if rand == 1 then
         local rx, ry = Ghost_red.x, Ghost_red.y
-        if not (rx > 11 and rx < 17 and ry > 16 and ry < 20) or not Ghost_red.state ~= 'goHome' then
+        if not (rx > 11 and rx < 17 and ry > 16 and ry < 20) or not Ghost_red.state == 'goHome' then
             Fruit[Round(ry)][Round(rx)] = 1
+        else
+            pacMan_states.game.addBonus()
+            return
+        end
+    elseif rand == 2 then
+        local px, py = Ghost_pink.x, Ghost_pink.y
+        if not (px > 11 and px < 17 and py > 16 and py < 20) or not Ghost_pink.state == 'goHome' then
+            Fruit[Round(py)][Round(px)] = 1
+        else
+            pacMan_states.game.addBonus()
+            return
+        end
+    elseif rand == 3 then
+        local bx, by = Ghost_blue.x, Ghost_blue.y
+        if not (bx > 11 and bx < 17 and by > 16 and by < 20) or not Ghost_blue.state == 'goHome' then
+            Fruit[Round(by)][Round(bx)] = 1
+        else
+            pacMan_states.game.addBonus()
+            return
+        end
+    elseif rand == 4 then
+        local ox, oy = Ghost_orange.x, Ghost_orange.y
+        if not (ox > 11 and ox < 17 and oy > 16 and oy < 20) or not Ghost_orange.state == 'goHome' then
+            Fruit[Round(oy)][Round(ox)] = 1
         else
             pacMan_states.game.addBonus()
             return
@@ -79,6 +118,9 @@ pacMan_states.game.draw = function()
     DrawMap()
     pacMan:draw()
     Ghost_red:draw()
+    Ghost_blue:draw()
+    Ghost_pink:draw()
+    Ghost_orange:draw()
 
     love.graphics.print('High Score', WindowWidth * 0.33, 0, 0, 2, 2)
     love.graphics.print(math.max(HighScore[1], pacMan.score), WindowWidth * 0.40, 23, 0, 2, 2)

@@ -203,14 +203,21 @@ local function draw(self)
     if self.blink then
         love.graphics.setColor(1, 1, 1, self.blinkTime % 1)
     end
-    love.graphics.draw(
-        self[self.currentAtlas],
+
+    -- local image
+    -- if self.currentAtlas == 'atlas' then
+    --     image = Ghost_red.atlas
+    -- elseif self.currentAtlas == 'fantomAtlas' then
+    --     image = fantomAtlas
+    -- end
+
+    love.graphics.draw(self[self.currentAtlas],
         self.sprites[self.animationDirection][self.keyframe],
         (self.x - 1) * Scale + Scale * 0.5,
         (self.y - 1) * Scale + Scale * 0.5,
         self.angle,
-        self.scaleSignX * 1.6,
-        self.scaleSignY * 1.6,
+        self.scaleSignX * 1 * 1.6,
+        self.scaleSignY * 1 * 1.6,
         16 * 0.5,
         16 * 0.5)
     if self.blink then
@@ -221,17 +228,17 @@ end
 -- Red Ghost --
 
 Ghost_red = {
-    startX = 14,
-    startY = 18,
-    x = 14,
-    y = 19,
+    startX = 14.5,
+    startY = 15,
+    x = 14.5,
+    y = 15,
     timer = 0,
     speed = 7.4,
     color = { r = 1, g = 0, b = 0, a = 0.7 },
     dirX = 0,
     dirY = 0,
-    direction = "up",
-    animationDirection = "up",
+    direction = "right",
+    animationDirection = "right",
     currentAtlas = "atlas",
     keyframe = 1,
     numberFrame = 2,
@@ -239,13 +246,13 @@ Ghost_red = {
     angle = 0,
     scaleSignX = 1,
     scaleSignY = 1,
-    state = "exitHome",
-    targetX = 15,
-    targetY = 14,
+    state = "scatter",
+    targetX = 25,
+    targetY = 1,
     speedBoost = 0.75,
-    nextDecision = "up",
-    nextX = 14,
-    nextY = 17,
+    nextDecision = "right",
+    nextX = 16,
+    nextY = 15,
     chaseIter = 1,
     scatterIter = 1,
     blink = false,
@@ -321,9 +328,9 @@ end
 
 Ghost_red.init = function(self)
     self.startX = 14.5
-    self.startY = 12 + 3
+    self.startY = 15
     self.x = 14.5
-    self.y = 12 + 3
+    self.y = 15
     self.timer = 0
     self.dirX = 0
     self.dirY = 0
@@ -340,7 +347,388 @@ Ghost_red.init = function(self)
     self.speedBoost = Levels[Level].ghostSpeed
     self.nextDecision = "right"
     self.nextX = 16
-    self.nextY = 12 + 3
+    self.nextY = 15
+    self.blink = false
+    self.blinkTime = 0
+end
+
+-- Blue Ghost --
+
+Ghost_blue = {
+    startX = 14,
+    startY = 18,
+    x = 14,
+    y = 19,
+    timer = 0,
+    speed = 7.4,
+    color = { r = 0, g = 0, b = 1, a = 0.7 },
+    dirX = 0,
+    dirY = 0,
+    direction = "up",
+    animationDirection = "up",
+    currentAtlas = "atlas",
+    keyframe = 1,
+    numberFrame = 2,
+    fps = 5,
+    angle = 0,
+    scaleSignX = 1,
+    scaleSignY = 1,
+    state = "exitHome",
+    targetX = 15,
+    targetY = 14,
+    speedBoost = 0.75,
+    nextDecision = "up",
+    nextX = 14,
+    nextY = 17,
+    chaseIter = 1,
+    scatterIter = 1,
+    blink = false,
+    blinkTime = 0
+}
+Ghost_blue.animationTimer = 1 / Ghost_blue.fps
+Ghost_blue.atlas = love.graphics.newImage('assets/images/fantomesPacman.png')
+Ghost_blue.fantomtAtlas = fantomAtlas
+Ghost_blue.sprites = {}
+Ghost_blue.sprites.right = {
+    love.graphics.newQuad(4 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+}
+Ghost_blue.sprites.down = {
+    love.graphics.newQuad(2 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+}
+Ghost_blue.sprites.left = {
+    love.graphics.newQuad(4 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+}
+Ghost_blue.sprites.up = {
+    love.graphics.newQuad(6 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_blue.atlas:getDimensions()),
+}
+Ghost_blue.sprites.fantom = {
+    love.graphics.newQuad(0 * 16, 0, 16, 16, fantomAtlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, fantomAtlas:getDimensions()),
+}
+
+
+Ghost_blue.draw = function(self)
+    draw(self)
+end
+
+Ghost_blue.update = function(self, dt)
+    self.timer = self.timer + dt
+    if self.state == 'chase' then
+        self.speedBoost = Levels[Level].ghostSpeed
+        self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
+        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+            self.chaseIter = self.chaseIter + 1
+            if self.chaseIter > 4 then self.chaseIter = 4 end
+            self.timer = 0
+            SetState(self, 'scatter')
+        end
+    elseif self.state == 'scatter' then
+        self.speedBoost = Levels[Level].ghostSpeed
+        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+            self.scatterIter = self.scatterIter + 1
+            if self.scatterIter > 4 then
+                self.scatterIter = 4
+            end
+            self.timer = 0
+            SetState(self, 'chase')
+        end
+        self.targetX, self.targetY = 25, 1
+    elseif self.state == 'fantom' then
+        self.speedBoost = Levels[Level].ghostFantomSpeed
+        if self.timer >= Levels[Level].fantomTime then
+            pacMan.speedBoost = Levels[Level].pacManSpeed
+            self.timer = 0
+            self.blink = false
+            self.blinkTime = 0
+            SetState(self, 'chase')
+        elseif self.timer >= Levels[Level].fantomTime - 2 then
+            self.blink = true
+            self.blinkTime = self.blinkTime + 3 * dt
+        end
+    end
+    update(self, dt)
+end
+
+Ghost_blue.init = function(self)
+    self.startX = 14
+    self.startY = 18
+    self.x = 14
+    self.y = 19
+    self.timer = 0
+    self.dirX = 0
+    self.dirY = 0
+    self.direction = "up"
+    self.animationDirection = "up"
+    self.currentAtlas = "atlas"
+    self.keyframe = 1
+    self.angle = 0
+    self.scaleSignX = 1
+    self.scaleSignY = 1
+    self.state = "exitHome"
+    self.targetX = 15
+    self.targetY = 15
+    self.speedBoost = Levels[Level].ghostSpeed
+    self.nextDecision = "up"
+    self.nextX = 14
+    self.nextY = 17
+    self.blink = false
+    self.blinkTime = 0
+end
+
+-- Pink Ghost --
+
+Ghost_pink = {
+    startX = 12,
+    startY = 18,
+    x = 12,
+    y = 19,
+    timer = 0,
+    speed = 7.4,
+    color = { r = 1, g = 0, b = 1, a = 0.7 },
+    dirX = 0,
+    dirY = 0,
+    direction = "up",
+    animationDirection = "up",
+    currentAtlas = "atlas",
+    keyframe = 1,
+    numberFrame = 2,
+    fps = 5,
+    angle = 0,
+    scaleSignX = 1,
+    scaleSignY = 1,
+    state = "exitHome",
+    targetX = 15,
+    targetY = 15,
+    speedBoost = 0.75,
+    nextDecision = "up",
+    nextX = 12,
+    nextY = 17,
+    chaseIter = 1,
+    scatterIter = 1,
+    blink = false,
+    blinkTime = 0
+}
+Ghost_pink.animationTimer = 1 / Ghost_pink.fps
+Ghost_pink.atlas = love.graphics.newImage('assets/images/fantomesPacman2.png')
+Ghost_pink.fantomtAtlas = fantomAtlas
+Ghost_pink.sprites = {}
+Ghost_pink.sprites.right = {
+    love.graphics.newQuad(4 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+}
+Ghost_pink.sprites.down = {
+    love.graphics.newQuad(2 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+}
+Ghost_pink.sprites.left = {
+    love.graphics.newQuad(4 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+}
+Ghost_pink.sprites.up = {
+    love.graphics.newQuad(6 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_pink.atlas:getDimensions()),
+}
+Ghost_blue.sprites.fantom = {
+    love.graphics.newQuad(0 * 16, 0, 16, 16, fantomAtlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, fantomAtlas:getDimensions()),
+}
+
+
+Ghost_pink.draw = function(self)
+    draw(self)
+end
+
+Ghost_pink.update = function(self, dt)
+    self.timer = self.timer + dt
+    if self.state == 'chase' then
+        self.speedBoost = Levels[Level].ghostSpeed
+        self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
+        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+            self.chaseIter = self.chaseIter + 1
+            if self.chaseIter > 4 then self.chaseIter = 4 end
+            self.timer = 0
+            SetState(self, 'scatter')
+        end
+    elseif self.state == 'scatter' then
+        self.speedBoost = Levels[Level].ghostSpeed
+        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+            self.scatterIter = self.scatterIter + 1
+            if self.scatterIter > 4 then
+                self.scatterIter = 4
+            end
+            self.timer = 0
+            SetState(self, 'chase')
+        end
+        self.targetX, self.targetY = 25, 1
+    elseif self.state == 'fantom' then
+        self.speedBoost = Levels[Level].ghostFantomSpeed
+        if self.timer >= Levels[Level].fantomTime then
+            pacMan.speedBoost = Levels[Level].pacManSpeed
+            self.timer = 0
+            self.blink = false
+            self.blinkTime = 0
+            SetState(self, 'chase')
+        elseif self.timer >= Levels[Level].fantomTime - 2 then
+            self.blink = true
+            self.blinkTime = self.blinkTime + 3 * dt
+        end
+    end
+    update(self, dt)
+end
+
+Ghost_pink.init = function(self)
+    self.startX = 12
+    self.startY = 18
+    self.x = 12
+    self.y = 19
+    self.timer = 0
+    self.dirX = 0
+    self.dirY = 0
+    self.direction = "up"
+    self.animationDirection = "up"
+    self.currentAtlas = "atlas"
+    self.keyframe = 1
+    self.angle = 0
+    self.scaleSignX = 1
+    self.scaleSignY = 1
+    self.state = "exitHome"
+    self.targetX = 15
+    self.targetY = 15
+    self.speedBoost = Levels[Level].ghostSpeed
+    self.nextDecision = "up"
+    self.nextX = 12
+    self.nextY = 17
+    self.blink = false
+    self.blinkTime = 0
+end
+
+-- Orange Ghost --
+
+Ghost_orange = {
+    startX = 12,
+    startY = 18,
+    x = 12,
+    y = 19,
+    timer = 0,
+    speed = 7.4,
+    color = { r = 1, g = 211 / 255, b = 32 / 255, a = 0.7 },
+    dirX = 0,
+    dirY = 0,
+    direction = "up",
+    animationDirection = "up",
+    currentAtlas = "atlas",
+    keyframe = 1,
+    numberFrame = 2,
+    fps = 5,
+    angle = 0,
+    scaleSignX = 1,
+    scaleSignY = 1,
+    state = "exitHome",
+    targetX = 15,
+    targetY = 14,
+    speedBoost = 0.75,
+    nextDecision = "up",
+    nextX = 16,
+    nextY = 17,
+    chaseIter = 1,
+    scatterIter = 1,
+    blink = false,
+    blinkTime = 0
+}
+Ghost_orange.animationTimer = 1 / Ghost_orange.fps
+Ghost_orange.atlas = love.graphics.newImage('assets/images/fantomesPacman3.png')
+Ghost_orange.fantomtAtlas = fantomAtlas
+Ghost_orange.sprites = {}
+Ghost_orange.sprites.right = {
+    love.graphics.newQuad(4 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+}
+Ghost_orange.sprites.down = {
+    love.graphics.newQuad(2 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+}
+Ghost_orange.sprites.left = {
+    love.graphics.newQuad(4 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+}
+Ghost_orange.sprites.up = {
+    love.graphics.newQuad(6 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, Ghost_orange.atlas:getDimensions()),
+}
+Ghost_orange.sprites.fantom = {
+    love.graphics.newQuad(0 * 16, 0, 16, 16, fantomAtlas:getDimensions()),
+    love.graphics.newQuad(1 * 16, 0, 16, 16, fantomAtlas:getDimensions()),
+}
+
+
+Ghost_orange.draw = function(self)
+    draw(self)
+end
+
+Ghost_orange.update = function(self, dt)
+    self.timer = self.timer + dt
+    if self.state == 'chase' then
+        self.speedBoost = Levels[Level].ghostSpeed
+        self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
+        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+            self.chaseIter = self.chaseIter + 1
+            if self.chaseIter > 4 then self.chaseIter = 4 end
+            self.timer = 0
+            SetState(self, 'scatter')
+        end
+    elseif self.state == 'scatter' then
+        self.speedBoost = Levels[Level].ghostSpeed
+        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+            self.scatterIter = self.scatterIter + 1
+            if self.scatterIter > 4 then
+                self.scatterIter = 4
+            end
+            self.timer = 0
+            SetState(self, 'chase')
+        end
+        self.targetX, self.targetY = 25, 1
+    elseif self.state == 'fantom' then
+        self.speedBoost = Levels[Level].ghostFantomSpeed
+        if self.timer >= Levels[Level].fantomTime then
+            pacMan.speedBoost = Levels[Level].pacManSpeed
+            self.timer = 0
+            self.blink = false
+            self.blinkTime = 0
+            SetState(self, 'chase')
+        elseif self.timer >= Levels[Level].fantomTime - 2 then
+            self.blink = true
+            self.blinkTime = self.blinkTime + 3 * dt
+        end
+    end
+    update(self, dt)
+end
+
+Ghost_orange.init = function(self)
+    self.startX = 16
+    self.startY = 18
+    self.x = 16
+    self.y = 19
+    self.timer = 0
+    self.dirX = 0
+    self.dirY = 0
+    self.direction = "up"
+    self.animationDirection = "up"
+    self.currentAtlas = "atlas"
+    self.keyframe = 1
+    self.angle = 0
+    self.scaleSignX = 1
+    self.scaleSignY = 1
+    self.state = "exitHome"
+    self.targetX = 15
+    self.targetY = 15
+    self.speedBoost = Levels[Level].ghostSpeed
+    self.nextDecision = "up"
+    self.nextX = 16
+    self.nextY = 17
     self.blink = false
     self.blinkTime = 0
 end
