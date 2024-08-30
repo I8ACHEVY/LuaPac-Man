@@ -29,7 +29,7 @@ local fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
 
 local function getNextTile(self)
     local roundX, roundY = Round(self.x), Round(self.y)
-    if self.direction == "left" then
+    if self.direction == 'left' then
         return roundX - 1, roundY
     elseif self.direction == 'right' then
         return roundX + 1, roundY
@@ -68,21 +68,6 @@ local function update(self, dt)
         end
     end
 
-    -- if Round(self.x) == Round(pacMan.x) and Round(self.y) == Round(pacMan.y) then
-    --     if self.state == 'goHome' then
-    --     elseif self.state == 'fantom' then
-    --         SoundGnom:play()
-    --         pacMan.successfulCatch = pacMan.successfulCatch + 1
-    --         if pacMan.successfulCatch > 5 then
-    --             pacMan.successfulCatch = 5
-    --         end
-    --         pacMan.score = pacMan.score + CatchPoint[pacMan.successfulCatch]
-    --         self.state = 'goHome'
-    --         return
-    --     else
-    --         pacMan_states.game.catch()
-    --     end
-    -- end
     if Round(self.x) == Round(pacMan.x) and Round(self.y) == Round(pacMan.y) then
         if self.state == 'fantom' then
             SoundGnom:play()
@@ -94,7 +79,6 @@ local function update(self, dt)
             pacMan_states.game.catch()
         end
     end
-    ----------------------------------------------
     if self.state == 'fantom' then
         self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
         self.currentAtlas = 'fantomAtlas'
@@ -219,6 +203,7 @@ local function update(self, dt)
 end
 
 local function draw(self)
+    -- self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
     if self.blink then
         love.graphics.setColor(1, 1, 1, self.blinkTime % 1)
     end
