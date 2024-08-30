@@ -80,7 +80,7 @@ local function update(self, dt)
         end
     end
     if self.state == 'fantom' then
-        self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
+        self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png') -- First spot fantom image now works
         self.currentAtlas = 'fantomAtlas'
         self.animationDirection = 'fantom'
     else

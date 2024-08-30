@@ -171,9 +171,21 @@ function pacMan:collect(item)
         Ghost_red.timer = 0
         Ghost_red.blinkTime = 0
         Ghost_red.blink = false
+        Ghost_blue.timer = 0
+        Ghost_blue.blinkTime = 0
+        Ghost_blue.blink = false
+        Ghost_pink.timer = 0
+        Ghost_pink.blinkTime = 0
+        Ghost_pink.blink = false
+        Ghost_orange.timer = 0
+        Ghost_orange.blinkTime = 0
+        Ghost_orange.blink = false
 
         self.speedBoost = Levels[Level].pacManFantomSpeed
         SetState(Ghost_red, 'fantom')
+        SetState(Ghost_blue, 'fantom')
+        SetState(Ghost_pink, 'fantom')
+        SetState(Ghost_orange, 'fantom')
 
         Dots = Dots - 1
     end
@@ -184,6 +196,15 @@ function pacMan:collect(item)
         Ghost_red:init()
         Ghost_red.chaseIter = 1
         Ghost_red.scatterIter = 1
+        Ghost_blue:init()
+        Ghost_blue.chaseIter = 1
+        Ghost_blue.scatterIter = 1
+        Ghost_pink:init()
+        Ghost_pink.chaseIter = 1
+        Ghost_pink.scatterIter = 1
+        Ghost_orange:init()
+        Ghost_orange.chaseIter = 1
+        Ghost_orange.scatterIter = 1
 
         Map, Obstacle, Collectable, Fruit = GetMaps()
         ReadyTimer = 4.5
