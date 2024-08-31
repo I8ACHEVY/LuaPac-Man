@@ -118,7 +118,7 @@ function DrawMap()
             local fruitChar = Fruit[a][b]
             if fruitChar > 0 then
                 love.graphics.draw(
-                    FruitAtlas, FruitSheet[Levels[Level].bonus],
+                    FruitAtlas, FruitSheet[levels[Level].bonus],
                     aa * Scale + Scale * 0.5,
                     bb * Scale + Scale * 0.5,
                     0, 1.6, 1.6,
@@ -190,9 +190,11 @@ function WriteScore()
     for a = 1, #tmp do
         reset = reset .. tmp[a] .. '\n'
     end
-    local file = io.open('highscore.score', 'w+')
-    f:write(reset)
-    f:close()
+    local f = io.open('highscore.score', 'w+')
+    if f ~= nil then
+        f:write(reset)
+        f:close()
+    end
 end
 
 function FileExists(name)
@@ -218,9 +220,11 @@ function GetHighScore()
     if FileExists('highscore.score') then
         HighScore = LinesFrom('highscore.score')
     else
-        local file = io.open('highscore.score', 'w')
-        --       f:write('0')
-        f:close()
-        HighScore = { 0 }
+        local f = io.open('highscore.score', 'w')
+        if f ~= nil then
+            f:write('0')
+            f:close()
+            HighScore = { 0 }
+        end
     end
 end

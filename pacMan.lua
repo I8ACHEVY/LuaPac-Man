@@ -33,7 +33,7 @@ pacMan.sprites = {
 function pacMan:update(dt)
     if self.isOnPillEffect then
         self.timer = self.timer + dt
-        if self.timer >= Levels[Level].fantomTime then
+        if self.timer >= levels[Level].fantomTime then
             self.isOnPillEffect = false
             self.successfulCatch = 0
         end
@@ -77,6 +77,7 @@ function pacMan:update(dt)
     self.lastScore = self.score
 
     -- Movement --
+
     --     local nextX = self.x + dt * self.speed * self.speedBoost * self.dirX
     --     local nextY = self.y + dt * self.speed * self.speedBoost * self.dirY
     --     local nextRoundX = Round(nextX)
@@ -92,6 +93,7 @@ function pacMan:update(dt)
     --         self.x, self.y = nextX, nextY
     --     end
     -- end
+
     if (self.direction == "left") then
         if Obstacle[roundY][roundX - 1] > 0 then
             self.dirX = 0
@@ -142,7 +144,7 @@ function pacMan:init()
     self.y = 27
     self.isOnPillEffect = false
     self.timer = 0
-    self.speedBoost = Levels[Level].pacManSpeed
+    self.speedBoost = levels[Level].pacManSpeed
     self.dirX = 0
     self.dirY = 0
     self.direction = "start"
@@ -159,7 +161,7 @@ function pacMan:collect(item)
     end
 
     if item == 'bonus' then
-        self.score = self.score + Levels[Level].bonusPoints
+        self.score = self.score + levels[Level].bonusPoints
         SoundFnom:play()
     elseif item == 8 then
         self.score = self.score + 10
@@ -181,7 +183,7 @@ function pacMan:collect(item)
         Ghost_orange.blinkTime = 0
         Ghost_orange.blink = false
 
-        self.speedBoost = Levels[Level].pacManFantomSpeed
+        self.speedBoost = levels[Level].pacManFantomSpeed
         SetState(Ghost_red, 'fantom')
         SetState(Ghost_blue, 'fantom')
         SetState(Ghost_pink, 'fantom')

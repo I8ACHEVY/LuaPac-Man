@@ -43,10 +43,6 @@ end
 local function getSurfaceTile(x, y)
     return
     {
-        -- Obstacle[y - 1][x],
-        -- Obstacle[y][x + 1],
-        -- Obstacle[y + 1][x],
-        -- Obstacle[y][x - 1],
         Obstacle[y - 1] and Obstacle[y - 1][x] or 0,
         Obstacle[y] and Obstacle[y][x + 1] or 0,
         Obstacle[y + 1] and Obstacle[y + 1][x] or 0,
@@ -80,7 +76,7 @@ local function update(self, dt)
         end
     end
     if self.state == 'fantom' then
-        self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png') -- First spot fantom image now works
+        self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
         self.currentAtlas = 'fantomAtlas'
         self.animationDirection = 'fantom'
     else
@@ -203,7 +199,6 @@ local function update(self, dt)
 end
 
 local function draw(self)
-    -- self.fantomAtlas = love.graphics.newImage('assets/images/fantomesPacman5.png')
     if self.blink then
         love.graphics.setColor(1, 1, 1, self.blinkTime % 1)
     end
@@ -225,9 +220,9 @@ end
 
 Ghost_red = {
     startX = 14.5,
-    startY = 15,
+    startY = 27,
     x = 14.5,
-    y = 15,
+    y = 27,
     timer = 0,
     speed = 7.4,
     color = { r = 1, g = 0, b = 0, a = 0.7 },
@@ -287,17 +282,17 @@ end
 Ghost_red.update = function(self, dt)
     self.timer = self.timer + dt
     if self.state == 'chase' then
-        self.speedBoost = Levels[Level].ghostSpeed
+        self.speedBoost = levels[Level].ghostSpeed
         self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
-        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+        if self.timer >= levels[Level].chaseTime[self.chaseIter] then
             self.chaseIter = self.chaseIter + 1
             if self.chaseIter > 4 then self.chaseIter = 4 end
             self.timer = 0
             SetState(self, 'scatter')
         end
     elseif self.state == 'scatter' then
-        self.speedBoost = Levels[Level].ghostSpeed
-        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+        self.speedBoost = levels[Level].ghostSpeed
+        if self.timer >= levels[Level].scatterTime[self.scatterIter] then
             self.scatterIter = self.scatterIter + 1
             if self.scatterIter > 4 then
                 self.scatterIter = 4
@@ -307,14 +302,14 @@ Ghost_red.update = function(self, dt)
         end
         self.targetX, self.targetY = 25, 1
     elseif self.state == 'fantom' then
-        self.speedBoost = Levels[Level].ghostFantomSpeed
-        if self.timer >= Levels[Level].fantomTime then
-            pacMan.speedBoost = Levels[Level].pacManSpeed
+        self.speedBoost = levels[Level].ghostFantomSpeed
+        if self.timer >= levels[Level].fantomTime then
+            pacMan.speedBoost = levels[Level].pacManSpeed
             self.timer = 0
             self.blink = false
             self.blinkTime = 0
             SetState(self, 'chase')
-        elseif self.timer >= Levels[Level].fantomTime - 2 then
+        elseif self.timer >= levels[Level].fantomTime - 2 then
             self.blink = true
             self.blinkTime = self.blinkTime + 3 * dt
         end
@@ -340,7 +335,7 @@ Ghost_red.init = function(self)
     self.state = "scatter"
     self.targetX = 25
     self.targetY = 1
-    self.speedBoost = Levels[Level].ghostSpeed
+    self.speedBoost = levels[Level].ghostSpeed
     self.nextDecision = "right"
     self.nextX = 16
     self.nextY = 15
@@ -414,17 +409,17 @@ end
 Ghost_blue.update = function(self, dt)
     self.timer = self.timer + dt
     if self.state == 'chase' then
-        self.speedBoost = Levels[Level].ghostSpeed
+        self.speedBoost = levels[Level].ghostSpeed
         self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
-        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+        if self.timer >= levels[Level].chaseTime[self.chaseIter] then
             self.chaseIter = self.chaseIter + 1
             if self.chaseIter > 4 then self.chaseIter = 4 end
             self.timer = 0
             SetState(self, 'scatter')
         end
     elseif self.state == 'scatter' then
-        self.speedBoost = Levels[Level].ghostSpeed
-        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+        self.speedBoost = levels[Level].ghostSpeed
+        if self.timer >= levels[Level].scatterTime[self.scatterIter] then
             self.scatterIter = self.scatterIter + 1
             if self.scatterIter > 4 then
                 self.scatterIter = 4
@@ -434,14 +429,14 @@ Ghost_blue.update = function(self, dt)
         end
         self.targetX, self.targetY = 25, 1
     elseif self.state == 'fantom' then
-        self.speedBoost = Levels[Level].ghostFantomSpeed
-        if self.timer >= Levels[Level].fantomTime then
-            pacMan.speedBoost = Levels[Level].pacManSpeed
+        self.speedBoost = levels[Level].ghostFantomSpeed
+        if self.timer >= levels[Level].fantomTime then
+            pacMan.speedBoost = levels[Level].pacManSpeed
             self.timer = 0
             self.blink = false
             self.blinkTime = 0
             SetState(self, 'chase')
-        elseif self.timer >= Levels[Level].fantomTime - 2 then
+        elseif self.timer >= levels[Level].fantomTime - 2 then
             self.blink = true
             self.blinkTime = self.blinkTime + 3 * dt
         end
@@ -467,7 +462,7 @@ Ghost_blue.init = function(self)
     self.state = "exitHome"
     self.targetX = 15
     self.targetY = 15
-    self.speedBoost = Levels[Level].ghostSpeed
+    self.speedBoost = levels[Level].ghostSpeed
     self.nextDecision = "up"
     self.nextX = 14
     self.nextY = 17
@@ -541,17 +536,17 @@ end
 Ghost_pink.update = function(self, dt)
     self.timer = self.timer + dt
     if self.state == 'chase' then
-        self.speedBoost = Levels[Level].ghostSpeed
+        self.speedBoost = levels[Level].ghostSpeed
         self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
-        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+        if self.timer >= levels[Level].chaseTime[self.chaseIter] then
             self.chaseIter = self.chaseIter + 1
             if self.chaseIter > 4 then self.chaseIter = 4 end
             self.timer = 0
             SetState(self, 'scatter')
         end
     elseif self.state == 'scatter' then
-        self.speedBoost = Levels[Level].ghostSpeed
-        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+        self.speedBoost = levels[Level].ghostSpeed
+        if self.timer >= levels[Level].scatterTime[self.scatterIter] then
             self.scatterIter = self.scatterIter + 1
             if self.scatterIter > 4 then
                 self.scatterIter = 4
@@ -561,14 +556,14 @@ Ghost_pink.update = function(self, dt)
         end
         self.targetX, self.targetY = 25, 1
     elseif self.state == 'fantom' then
-        self.speedBoost = Levels[Level].ghostFantomSpeed
-        if self.timer >= Levels[Level].fantomTime then
-            pacMan.speedBoost = Levels[Level].pacManSpeed
+        self.speedBoost = levels[Level].ghostFantomSpeed
+        if self.timer >= levels[Level].fantomTime then
+            pacMan.speedBoost = levels[Level].pacManSpeed
             self.timer = 0
             self.blink = false
             self.blinkTime = 0
             SetState(self, 'chase')
-        elseif self.timer >= Levels[Level].fantomTime - 2 then
+        elseif self.timer >= levels[Level].fantomTime - 2 then
             self.blink = true
             self.blinkTime = self.blinkTime + 3 * dt
         end
@@ -594,7 +589,7 @@ Ghost_pink.init = function(self)
     self.state = "exitHome"
     self.targetX = 15
     self.targetY = 15
-    self.speedBoost = Levels[Level].ghostSpeed
+    self.speedBoost = levels[Level].ghostSpeed
     self.nextDecision = "up"
     self.nextX = 12
     self.nextY = 17
@@ -668,17 +663,17 @@ end
 Ghost_orange.update = function(self, dt)
     self.timer = self.timer + dt
     if self.state == 'chase' then
-        self.speedBoost = Levels[Level].ghostSpeed
+        self.speedBoost = levels[Level].ghostSpeed
         self.targetX, self.targetY = Round(pacMan.x), Round(pacMan.y)
-        if self.timer >= Levels[Level].chaseTime[self.chaseIter] then
+        if self.timer >= levels[Level].chaseTime[self.chaseIter] then
             self.chaseIter = self.chaseIter + 1
             if self.chaseIter > 4 then self.chaseIter = 4 end
             self.timer = 0
             SetState(self, 'scatter')
         end
     elseif self.state == 'scatter' then
-        self.speedBoost = Levels[Level].ghostSpeed
-        if self.timer >= Levels[Level].scatterTime[self.scatterIter] then
+        self.speedBoost = levels[Level].ghostSpeed
+        if self.timer >= levels[Level].scatterTime[self.scatterIter] then
             self.scatterIter = self.scatterIter + 1
             if self.scatterIter > 4 then
                 self.scatterIter = 4
@@ -688,14 +683,14 @@ Ghost_orange.update = function(self, dt)
         end
         self.targetX, self.targetY = 25, 1
     elseif self.state == 'fantom' then
-        self.speedBoost = Levels[Level].ghostFantomSpeed
-        if self.timer >= Levels[Level].fantomTime then
-            pacMan.speedBoost = Levels[Level].pacManSpeed
+        self.speedBoost = levels[Level].ghostFantomSpeed
+        if self.timer >= levels[Level].fantomTime then
+            pacMan.speedBoost = levels[Level].pacManSpeed
             self.timer = 0
             self.blink = false
             self.blinkTime = 0
             SetState(self, 'chase')
-        elseif self.timer >= Levels[Level].fantomTime - 2 then
+        elseif self.timer >= levels[Level].fantomTime - 2 then
             self.blink = true
             self.blinkTime = self.blinkTime + 3 * dt
         end
@@ -721,7 +716,7 @@ Ghost_orange.init = function(self)
     self.state = "exitHome"
     self.targetX = 15
     self.targetY = 15
-    self.speedBoost = Levels[Level].ghostSpeed
+    self.speedBoost = levels[Level].ghostSpeed
     self.nextDecision = "up"
     self.nextX = 16
     self.nextY = 17
